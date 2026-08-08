@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home — Thread{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'posts/css/post.css' %}">{% endblock %}
+
+{% block content %}
+
+{% if create_form %}
+<form class="composer" method="post" action="{% url 'posts:create_post' %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ create_form.caption }}
+  <div class="composer-row">
+    <label class="composer-file-label">
+      {{ create_form.image }}
+      📷 Add photo
+    </label>
+    <button type="submit" class="btn btn-accent btn-sm">Post</button>
+  </div>
+  {% if create_form.non_field_errors %}<div class="helptext">{{ create_form.non_field_errors }}</div>{% endif %}
+</form>
+{% endif %}
+
+<div class="feed-tabs">
+  <a href="{% url 'posts:home' %}?feed=all" class="{% if active_feed == 'all' %}active{% endif %}">All Posts</a>
+  {% if user.is_authenticated %}
+    <a href="{% url 'posts:home' %}?feed=following" class="{% if active_feed == 'following' %}active{% endif %}">Following</a>
+  {% endif %}
+</div>
+
+{% if page_obj.object_list %}
+  {% for post in page_obj %}
+    {% include "posts/_post_card.html" %}
+  {% endfor %}
+{% else %}
+  <div class="empty-state">
+    {% if active_feed == 'following' %}
+      No posts yet from people you follow. <a href="{% url 'posts:search' %}">Find people to follow</a>.
+    {% else %}
+      No posts yet. {% if user.is_authenticated %}Be the first to share something!{% else %}<a href="{% url 'users:register' %}">Join</a> to start posting.{% endif %}
+    {% endif %}
+  </div>
+{% endif %}
+
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="pagination">
+  {% if page_obj.has_previous %}<a href="?feed={{ active_feed }}&page={{ page_obj.previous_page_number }}">‹ Prev</a>{% endif %}
+  <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?feed={{ active_feed }}&page={{ page_obj.next_page_number }}">Next ›</a>{% endif %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'posts/js/like.js' %}"></script>{% endblock %}

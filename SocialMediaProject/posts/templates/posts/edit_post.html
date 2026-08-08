@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Edit Post — Thread{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2 style="margin-bottom:20px;">Edit post</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="field">
+      <label for="{{ form.caption.id_for_label }}">Caption</label>
+      {{ form.caption }}
+      {{ form.caption.errors }}
+    </div>
+    <div class="field">
+      <label for="{{ form.image.id_for_label }}">Photo</label>
+      {% if post.image %}<img src="{{ post.image.url }}" style="width:100%; border-radius:10px; margin-bottom:10px;" />{% endif %}
+      {{ form.image }}
+      {{ form.image.errors }}
+    </div>
+    {{ form.non_field_errors }}
+    <div style="display:flex; gap:10px;">
+      <button type="submit" class="btn btn-accent">Save changes</button>
+      <a href="{% url 'posts:post_detail' pk=post.pk %}" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ post.user.username }}'s post — Thread{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'posts/css/post.css' %}">{% endblock %}
+
+{% block content %}
+<div class="post-detail-card">
+  {% include "posts/_post_card.html" %}
+</div>
+
+<div class="comments-section" id="comments">
+  <h3>Comments</h3>
+
+  {% if comment_form %}
+  <form class="comment-form" id="comment-form" data-url="{% url 'posts:add_comment' pk=post.pk %}">
+    {% csrf_token %}
+    <input type="text" name="text" placeholder="Add a comment..." maxlength="500" required />
+    <button type="submit" class="btn btn-accent btn-sm">Send</button>
+  </form>
+  {% else %}
+  <p class="helptext"><a href="{% url 'users:login' %}?next={{ request.path }}">Log in</a> to join the conversation.</p>
+  {% endif %}
+
+  <div id="comment-list">
+    {% for comment in comments %}
+      <div class="comment-item">
+        <a href="{% url 'users:profile' username=comment.user.username %}">
+          {% if comment.user.profile.profile_pic %}
+            <img src="{{ comment.user.profile.profile_pic.url }}" class="avatar avatar-sm" alt="{{ comment.user.username }}" />
+          {% else %}
+            <div class="avatar avatar-sm">{{ comment.user.username|slice:":1"|upper }}</div>
+          {% endif %}
+        </a>
+        <div class="comment-bubble">
+          <span class="comment-username">{{ comment.user.username }}</span>{{ comment.text }}
+        </div>
+      </div>
+    {% empty %}
+      <p class="helptext" id="no-comments-msg">No comments yet — be the first to say something.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'posts/js/like.js' %}"></script>
+<script src="{% static 'posts/js/comment.js' %}"></script>
+{% endblock %}

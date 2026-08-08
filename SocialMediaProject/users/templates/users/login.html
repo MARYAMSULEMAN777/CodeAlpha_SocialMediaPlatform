@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Log In — Thread{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2 style="margin-bottom:20px;">Log in</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+    </div>
+    <div class="field">
+      <label for="{{ form.password.id_for_label }}">Password</label>
+      {{ form.password }}
+    </div>
+    {% if form.non_field_errors %}<ul class="errorlist">{{ form.non_field_errors }}</ul>{% endif %}
+    <button type="submit" class="btn btn-primary btn-block">Log In</button>
+  </form>
+  <p style="margin-top:16px; font-size:0.9rem;">New here? <a href="{% url 'users:register' %}" style="color:var(--accent); font-weight:600;">Create an account</a></p>
+</div>
+{% endblock %}

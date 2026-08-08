@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{% block title %}Thread{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'css/main.css' %}" />
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="wrap-wide">
+    <a href="{% url 'posts:home' %}" class="brand">Thread<span class="dot">.</span></a>
+
+    <div class="nav-search">
+      <form action="{% url 'posts:search' %}" method="get">
+        <input type="text" name="q" placeholder="Search people or posts..." value="{{ request.GET.q|default:'' }}" />
+      </form>
+    </div>
+
+    <div class="nav-links">
+      <a href="{% url 'posts:home' %}">Home</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'posts:create_post' %}">Post</a>
+        <a href="{% url 'users:profile' username=user.username %}">
+          {% if user.profile.profile_pic %}
+            <img src="{{ user.profile.profile_pic.url }}" class="nav-avatar" alt="{{ user.username }}" />
+          {% else %}
+            {{ user.username }}
+          {% endif %}
+        </a>
+        <form action="{% url 'users:logout' %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn-danger-text">Logout</button>
+        </form>
+      {% else %}
+        <a href="{% url 'users:login' %}">Login</a>
+        <a href="{% url 'users:register' %}" class="btn btn-accent btn-sm">Join</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer>CodeAlpha Full Stack Development — Task 2: Social Media Platform</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Join — Thread{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2 style="margin-bottom:20px;">Create your account</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+      {{ form.username.errors }}
+      <small class="helptext">{{ form.username.help_text }}</small>
+    </div>
+    <div class="field">
+      <label for="{{ form.email.id_for_label }}">Email</label>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </div>
+    <div class="field">
+      <label for="{{ form.password1.id_for_label }}">Password</label>
+      {{ form.password1 }}
+      {{ form.password1.errors }}
+      <small class="helptext">At least 6 characters — avoid common passwords.</small>
+    </div>
+    <div class="field">
+      <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+      {{ form.password2 }}
+      {{ form.password2.errors }}
+    </div>
+    <button type="submit" class="btn btn-accent btn-block">Register</button>
+  </form>
+  <p style="margin-top:16px; font-size:0.9rem;">Already have an account? <a href="{% url 'users:login' %}" style="color:var(--accent); font-weight:600;">Log in</a></p>
+</div>
+{% endblock %}

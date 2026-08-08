@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Create Post — Thread{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2 style="margin-bottom:20px;">Share something</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="field">
+      <label for="{{ form.caption.id_for_label }}">Caption</label>
+      {{ form.caption }}
+      {{ form.caption.errors }}
+    </div>
+    <div class="field">
+      <label for="{{ form.image.id_for_label }}">Photo (optional)</label>
+      {{ form.image }}
+      {{ form.image.errors }}
+    </div>
+    {{ form.non_field_errors }}
+    <button type="submit" class="btn btn-accent btn-block">Post</button>
+  </form>
+</div>
+{% endblock %}

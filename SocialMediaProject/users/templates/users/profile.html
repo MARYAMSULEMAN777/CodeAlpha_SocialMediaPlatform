@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ profile_user.username }} — Thread{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'users/css/style.css' %}">{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+  {% if profile_user.profile.profile_pic %}
+    <img src="{{ profile_user.profile.profile_pic.url }}" class="avatar avatar-lg" alt="{{ profile_user.username }}" />
+  {% else %}
+    <div class="avatar avatar-lg">{{ profile_user.username|slice:":1"|upper }}</div>
+  {% endif %}
+
+  <div class="profile-info">
+    <div class="profile-top-row">
+      <h2>{{ profile_user.username }}</h2>
+      {% if is_own_profile %}
+        <a href="{% url 'users:edit_profile' %}" class="btn btn-outline btn-sm">Edit Profile</a>
+      {% elif user.is_authenticated %}
+        <form action="{% url 'followers:toggle_follow' username=profile_user.username %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-follow btn-sm {% if is_following %}following{% else %}btn-accent{% endif %}">
+            {% if is_following %}Following{% else %}Follow{% endif %}
+          </button>
+        </form>
+      {% endif %}
+    </div>
+
+    {% if profile_user.profile.bio %}<p class="profile-bio">{{ profile_user.profile.bio }}</p>{% endif %}
+
+    <div class="profile-stats">
+      <span><strong>{{ profile_user.profile.post_count }}</strong> posts</span>
+      <a href="{% url 'followers:followers_list' username=profile_user.username %}"><strong>{{ profile_user.profile.follower_count }}</strong> followers</a>
+      <a href="{% url 'followers:following_list' username=profile_user.username %}"><strong>{{ profile_user.profile.following_count }}</strong> following</a>
+    </div>
+  </div>
+</div>
+
+<div class="profile-post-grid">
+  {% for post in page_obj %}
+    <a href="{% url 'posts:post_detail' pk=post.pk %}" class="grid-tile">
+      {% if post.image %}
+        <img src="{{ post.image.url }}" alt="Post" />
+      {% else %}
+        <div class="grid-tile-text">{{ post.caption|truncatechars:80 }}</div>
+      {% endif %}
+      <div class="grid-tile-overlay">
+        <span>♥ {{ post.like_count }}</span>
+        <span>💬 {{ post.comment_count }}</span>
+      </div>
+    </a>
+  {% empty %}
+    <div class="empty-state" style="grid-column: 1 / -1;">
+      {% if is_own_profile %}You haven't posted anything yet. <a href="{% url 'posts:create_post' %}">Share your first post</a>.{% else %}No posts yet.{% endif %}
+    </div>
+  {% endfor %}
+</div>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="pagination">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">‹ Prev</a>{% endif %}
+  <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next ›</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

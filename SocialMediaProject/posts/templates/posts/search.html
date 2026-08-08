@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Search — Thread{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'posts/css/post.css' %}">{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom:20px;">
+  {% if query %}Results for "{{ query }}"{% else %}Search Thread{% endif %}
+</h2>
+
+{% if not query %}
+  <div class="empty-state">Search for people by username or bio, or search post captions using the box above.</div>
+{% else %}
+
+  <div class="search-section">
+    <h3>People</h3>
+    {% for u in users %}
+      <div class="user-row">
+        <a href="{% url 'users:profile' username=u.username %}">
+          {% if u.profile.profile_pic %}
+            <img src="{{ u.profile.profile_pic.url }}" class="avatar avatar-sm" alt="{{ u.username }}" />
+          {% else %}
+            <div class="avatar avatar-sm">{{ u.username|slice:":1"|upper }}</div>
+          {% endif %}
+        </a>
+        <div class="user-meta">
+          <a href="{% url 'users:profile' username=u.username %}" style="font-weight:600;">{{ u.username }}</a>
+          {% if u.profile.bio %}<div class="user-bio">{{ u.profile.bio }}</div>{% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p class="helptext">No matching people.</p>
+    {% endfor %}
+  </div>
+
+  <div class="search-section">
+    <h3>Posts</h3>
+    {% for post in posts %}
+      {% include "posts/_post_card.html" %}
+    {% empty %}
+      <p class="helptext">No matching posts.</p>
+    {% endfor %}
+  </div>
+
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'posts/js/like.js' %}"></script>{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Edit Profile — Thread{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2 style="margin-bottom:20px;">Edit your profile</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="field">
+      <label for="{{ profile_form.profile_pic.id_for_label }}">Profile photo</label>
+      {% if user.profile.profile_pic %}
+        <img src="{{ user.profile.profile_pic.url }}" style="width:72px; height:72px; border-radius:50%; object-fit:cover; margin-bottom:10px;" />
+      {% endif %}
+      {{ profile_form.profile_pic }}
+      {{ profile_form.profile_pic.errors }}
+    </div>
+
+    <div class="field">
+      <label for="{{ profile_form.bio.id_for_label }}">Bio</label>
+      {{ profile_form.bio }}
+      {{ profile_form.bio.errors }}
+    </div>
+
+    <div class="field">
+      <label for="{{ user_form.first_name.id_for_label }}">First Name</label>
+      {{ user_form.first_name }}
+    </div>
+    <div class="field">
+      <label for="{{ user_form.last_name.id_for_label }}">Last Name</label>
+      {{ user_form.last_name }}
+    </div>
+    <div class="field">
+      <label for="{{ user_form.email.id_for_label }}">Email</label>
+      {{ user_form.email }}
+      {{ user_form.email.errors }}
+    </div>
+
+    <button type="submit" class="btn btn-accent btn-block">Save Changes</button>
+  </form>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{% static 'users/js/profile.js' %}"></script>{% endblock %}

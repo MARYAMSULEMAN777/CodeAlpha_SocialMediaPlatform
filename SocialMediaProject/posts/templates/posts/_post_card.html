@@ -1,0 +1,47 @@
+{% load static post_extras %}
+<article class="post-card" id="post-{{ post.pk }}">
+  <div class="post-thread-col">
+    <a href="{% url 'users:profile' username=post.user.username %}">
+      {% if post.user.profile.profile_pic %}
+        <img src="{{ post.user.profile.profile_pic.url }}" class="avatar avatar-md" alt="{{ post.user.username }}" />
+      {% else %}
+        <div class="avatar avatar-md">{{ post.user.username|slice:":1"|upper }}</div>
+      {% endif %}
+    </a>
+    <span class="thread-line"></span>
+  </div>
+
+  <div class="post-body">
+    <div class="post-head">
+      <a href="{% url 'users:profile' username=post.user.username %}" class="post-username">{{ post.user.username }}</a>
+      <span class="post-time">{{ post.created_at|timesince }} ago</span>
+      {% if request.user == post.user %}
+        <div class="post-owner-menu">
+          <a href="{% url 'posts:edit_post' pk=post.pk %}" class="post-owner-link">Edit</a>
+          <form action="{% url 'posts:delete_post' pk=post.pk %}" method="post" style="display:inline;" onsubmit="return confirm('Delete this post?');">
+            {% csrf_token %}
+            <button type="submit" class="post-owner-link post-owner-delete">Delete</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if post.caption %}<p class="post-caption">{{ post.caption }}</p>{% endif %}
+    {% if post.image %}
+      <a href="{% url 'posts:post_detail' pk=post.pk %}">
+        <img src="{{ post.image.url }}" class="post-image" alt="Post by {{ post.user.username }}" />
+      </a>
+    {% endif %}
+
+    <div class="post-actions">
+      <button class="like-btn {% if post|is_liked_by:request.user %}liked{% endif %}" data-post-id="{{ post.pk }}" data-url="{% url 'posts:like_post' pk=post.pk %}">
+        <svg viewBox="0 0 24 24" width="19" height="19" class="heart-icon"><path d="M12 21s-7.5-4.6-10.2-9.3C.2 8.7 1.6 5 5.2 5c2 0 3.4 1 4.8 2.7C11.4 6 12.8 5 14.8 5c3.6 0 5 3.7 3.4 6.7C19.5 16.4 12 21 12 21z" fill="currentColor"/></svg>
+        <span class="like-count">{{ post.like_count }}</span>
+      </button>
+      <a href="{% url 'posts:post_detail' pk=post.pk %}#comments" class="comment-link">
+        <svg viewBox="0 0 24 24" width="19" height="19"><path d="M21 12c0 4.4-4 8-9 8-1.1 0-2.2-.2-3.2-.5L3 21l1.6-4.8C3.6 14.9 3 13.5 3 12c0-4.4 4-8 9-8s9 3.6 9 8z" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+        <span>{{ post.comment_count }} comment{{ post.comment_count|pluralize }}</span>
+      </a>
+    </div>
+  </div>
+</article>

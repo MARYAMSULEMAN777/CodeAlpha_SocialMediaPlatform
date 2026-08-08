@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — Thread{% endblock %}
+{% block content %}
+<h2 style="margin-bottom:20px;">{{ title }}</h2>
+
+{% for u in users %}
+  <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line);">
+    <a href="{% url 'users:profile' username=u.username %}">
+      {% if u.profile.profile_pic %}
+        <img src="{{ u.profile.profile_pic.url }}" class="avatar avatar-sm" alt="{{ u.username }}" />
+      {% else %}
+        <div class="avatar avatar-sm">{{ u.username|slice:":1"|upper }}</div>
+      {% endif %}
+    </a>
+    <div style="flex:1;">
+      <a href="{% url 'users:profile' username=u.username %}" style="font-weight:600;">{{ u.username }}</a>
+      {% if u.profile.bio %}<div style="color:var(--muted); font-size:0.85rem;">{{ u.profile.bio }}</div>{% endif %}
+    </div>
+  </div>
+{% empty %}
+  <div class="empty-state">Nobody here yet.</div>
+{% endfor %}
+
+<p style="margin-top:20px;"><a href="{% url 'users:profile' username=profile_user.username %}" style="color:var(--accent); font-weight:600;">← Back to profile</a></p>
+{% endblock %}
